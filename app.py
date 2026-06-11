@@ -486,8 +486,8 @@ def send_email(to_addr, ppt_bytes, title):
     msg = email.message.EmailMessage()
     msg['From'] = from_addr
     msg['To'] = to_addr
-    msg['Subject'] = f'[공정사고보고서] {title}'
-    msg.set_content('공정사고 보고서를 첨부합니다.')
+    msg['Subject'] = '[Hansol] Accident Report'
+    msg.set_content(f'공정사고 보고서를 첨부합니다.\n\n제목: {title}')
     msg.add_attachment(ppt_bytes,
                        maintype='application',
                        subtype='octet-stream',
