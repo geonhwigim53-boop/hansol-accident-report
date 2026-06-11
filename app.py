@@ -479,20 +479,19 @@ def generate():
 
 
 def send_email(to_addr, ppt_bytes, title):
+    import email.message
     from_addr = os.environ.get('MAIL_USER','')
     password  = os.environ.get('MAIL_PASS','')
     if not from_addr: raise ValueError('MAIL_USER 환경변수를 설정해주세요.')
-    from email.header import Header
-    msg = MIMEMultipart()
+    msg = email.message.EmailMessage()
     msg['From'] = from_addr
     msg['To'] = to_addr
-    msg['Subject'] = Header(f'[공정사고보고서] {title}', 'utf-8')
-    msg.attach(MIMEText('공정사고 보고서를 첨부합니다.', 'plain', 'utf-8'))
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(ppt_bytes)
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', 'attachment; filename="report.pptx"')
-    msg.attach(part)
+    msg['Subject'] = f'[공정사고보고서] {title}'
+    msg.set_content('공정사고 보고서를 첨부합니다.')
+    msg.add_attachment(ppt_bytes,
+                       maintype='application',
+                       subtype='octet-stream',
+                       filename='report.pptx')
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
         s.login(from_addr, password)
         s.send_message(msg)
