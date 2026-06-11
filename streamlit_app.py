@@ -166,8 +166,23 @@ if st.button("📊 PPT 생성"):
             # 이메일 발송
             if email_to.strip():
                 try:
-                    from app import send_email
-                    send_email(email_to.strip(), ppt_bytes, title)
-                    st.success(f"📧 {email_to} 로 메일 발송 완료!")
+                    import smtplib, os, io
+                    from email.message import EmailMessage
+                    mail_user = os.environ.get('MAIL_USER','')
+                    mail_pass = os.environ.get('MAIL_PASS','')
+                    msg = EmailMessage()
+                    msg['From'] = mail_user
+                    msg['To'] = email_to.strip()
+                    msg['Subject'] = '[Hansol] Accident Report'
+                    msg.set_payload('Hansol accident report attached.')
+                    msg.add_attachment(ppt_bytes,
+                                       maintype='application',
+                                       subtype='octet-stream',
+                                       filename='report.pptx')
+                    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as s:
+                        s.login(mail_user, mail_pass)
+                        s.send_message(msg)
+                    st.success(f"메일 발송 완료!")
                 except Exception as e:
-                    st.warning(f"메일 발송 실패: {e}")
+                    import traceback
+                    st.warning(f"메일 발송 실패: {traceback.format_exc()}")
