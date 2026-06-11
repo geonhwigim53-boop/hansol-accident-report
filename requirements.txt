@@ -1,0 +1,5 @@
+streamlit
+flask
+python-pptx
+Pillow
+lxml
